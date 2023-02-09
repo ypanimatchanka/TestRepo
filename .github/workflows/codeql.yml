@@ -78,7 +78,7 @@ jobs:
     - name: slack-send
       # You may pin to the exact commit or the version.
       # uses: slackapi/slack-github-action@007b2c3c751a190b6f0f040e47ed024deaa72844
-      uses: slackapi/slack-github-action@v1.23.0
+      uses: act10ns/slack@v1
       with:
         status: ${{ job.status }}
         config: .github/config/slack.yml
