@@ -47,28 +47,11 @@ jobs:
       uses: github/codeql-action/init@v2
       with:
         languages: ${{ matrix.language }}
-        # If you wish to specify custom queries, you can do so here or in a config file.
-        # By default, queries listed here will override any specified in a config file.
-        # Prefix the list here with "+" to use these queries and those in the config file.
-
-        # Details on CodeQL's query packs refer to : https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#using-queries-in-ql-packs
-        # queries: security-extended,security-and-quality
-
 
     # Autobuild attempts to build any compiled languages  (C/C++, C#, Go, or Java).
     # If this step fails, then you should remove it and run the build manually (see below)
     - name: Autobuild
       uses: github/codeql-action/autobuild@v2
-
-    # ℹ️ Command-line programs to run using the OS shell.
-    # 📚 See https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsrun
-
-    #   If the Autobuild fails above, remove it and uncomment the following three lines.
-    #   modify them (or add more) to build your code if your project, please refer to the EXAMPLE below for guidance.
-
-    # - run: |
-    #     echo "Run, Build Application using script"
-    #     ./location_of_script_within_repo/buildscript.sh
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
@@ -79,42 +62,50 @@ jobs:
       # You may pin to the exact commit or the version.
              uses: slackapi/slack-github-action@v1.23.0
        with:
-+        payload: |
-+          {
-+            "text": "Danny Torrence left a 1 star review for your property.",
-+            "blocks": [
-+              {
-+                "type": "section",
-+                "text": {
-+                  "type": "mrkdwn",
-+                  "text": "lalal"
-+                }
-+              },
-+              {
-+                "type": "section",
-+                "block_id": "section567",
-+                "text": {
-+                  "type": "mrkdwn",
-+                  "text": "<https://example.com|Overlook Hotel> \\n :star: \\n Doors had too many axe holes, guest in room 237 was far too rowdy, whole place felt stuck in the 1920s."
-+                },
-+                "accessory": {
-+                  "type": "image",
-+                  "image_url": "https://is5-ssl.mzstatic.com/image/thumb/Purple3/v4/d3/72/5c/d3725c8f-c642-5d69-1904-aa36e4297885/source/256x256bb.jpg",
-+                  "alt_text": "Haunted hotel image"
-+                }
-+              },
-+              {
-+                "type": "section",
-+                "block_id": "section789",
-+                "fields": [
-+                  {
-+                    "type": "mrkdwn",
-+                    "text": "*Average Rating*\\n1.0"
-+                  }
-+                ]
-+              }
-+            ]
-+          }
-+      env:
-+        SLACK_WEBHOOK_URL: ${{ secrets.WEBHOOK_URL_SLACK }}
-+        SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+        payload: |
+          {
+            "text": "Danny Torrence left a 1 star review for your property.",
+            "blocks": [
+            {
+              "type": "section",
+              "text": {
+                "type": "mrkdwn",
+                "text": |
+                  *<{{workflowRunUrl}}|Workflow _{{workflow}}_ job _{{jobName}}_ triggered by _{{eventName}}_ is _{{jobStatus}}_>* for <{{refUrl}}|`{{ref}}`>
+                    {{#if description}}<{{diffUrl}}|`{{diffRef}}`> - {{description}}{{/if}}
+                    {{#if payload.commits}}
+                    *Commits*
+                    {{#each payload.commits}}
+                    <{{this.url}}|`{{truncate this.id 8}}`> - {{this.message}}
+                    {{/each}}
+                    {{/if}}
+              }
+            },
+            {
+              "type": "section",
+              "block_id": "section567",
+              "text": {
+                "type": "mrkdwn",
+                "text": "<https://example.com|Overlook Hotel> \\n :star: \\n Doors had too many axe holes, guest in room 237 was far too rowdy, whole place felt stuck in the 1920s."
+              },
+              "accessory": {
+                "type": "image",
+                "image_url": "https://is5-ssl.mzstatic.com/image/thumb/Purple3/v4/d3/72/5c/d3725c8f-c642-5d69-1904-aa36e4297885/source/256x256bb.jpg",
+                "alt_text": "Haunted hotel image"
+              }
+            },
+            {
+              "type": "section",
+              "block_id": "section789",
+              "fields": [
+              {
+                "type": "mrkdwn",
+                "text": "*Average Rating*\\n1.0"
+              }
+              ]
+            }
+            ]
+          }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.WEBHOOK_URL_SLACK }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
