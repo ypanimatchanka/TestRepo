@@ -46,7 +46,7 @@ jobs:
                 "type": "section",
                 "text": {
                   "type": "mrkdwn",
-                  "text": "*Pull Request:* <https://github.com/waveneuroscience/sonal-mobile-app-ios/pull/${{ github.event.number }}|${{ github.event.pull_request.title }}>"
+                  "text": "* Pull Request:* <https://github.com/waveneuroscience/sonal-mobile-app-ios/pull/${{ github.event.number }}|${{ github.event.pull_request.title }}>"
                 }
               }
               ],
