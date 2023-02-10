@@ -60,27 +60,12 @@ jobs:
     
     - name: slack-send
       # You may pin to the exact commit or the version.
-             uses: slackapi/slack-github-action@v1.23.0
-       with:
+      uses: slackapi/slack-github-action@v1.23.0
+      with:
         payload: |
           {
             "text": "Danny Torrence left a 1 star review for your property.",
             "blocks": [
-            {
-              "type": "section",
-              "text": {
-                "type": "mrkdwn",
-                "text": |
-                  *<{{workflowRunUrl}}|Workflow _{{workflow}}_ job _{{jobName}}_ triggered by _{{eventName}}_ is _{{jobStatus}}_>* for <{{refUrl}}|`{{ref}}`>
-                    {{#if description}}<{{diffUrl}}|`{{diffRef}}`> - {{description}}{{/if}}
-                    {{#if payload.commits}}
-                    *Commits*
-                    {{#each payload.commits}}
-                    <{{this.url}}|`{{truncate this.id 8}}`> - {{this.message}}
-                    {{/each}}
-                    {{/if}}
-              }
-            },
             {
               "type": "section",
               "block_id": "section567",
