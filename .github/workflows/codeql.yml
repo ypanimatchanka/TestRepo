@@ -64,7 +64,7 @@ jobs:
             ],
             "attachments": [
               {
-                "pretext": "iOS Build result: *${{jobStatus}}*",
+                "pretext": "iOS Build result: *${{job.status}}* | ${{steps.world.outcome}}",
                 "color": "dbab09",
                 "fields": [
                   {
