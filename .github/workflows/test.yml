@@ -23,6 +23,7 @@ jobs:
         with:
           payload: |
             {
+              "text": "Build ready for test!",
               "blocks": [
               {
                 "type": "section",
