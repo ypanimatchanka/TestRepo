@@ -87,9 +87,7 @@ jobs:
 +                "type": "section",
 +                "text": {
 +                  "type": "mrkdwn",
-+                  "text": |
-                      *Commits*
-                      {{#each payload.commits}}
++                  "text": "lalal"
 +                }
 +              },
 +              {
