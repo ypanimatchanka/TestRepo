@@ -43,6 +43,7 @@ jobs:
       uses: github/codeql-action/autobuild@v2
 
     - name: Perform CodeQL Analysis
+      id: validation
       uses: github/codeql-action/analyze@v2
       with:
         category: "/language:${{matrix.language}}"
@@ -64,7 +65,7 @@ jobs:
             ],
             "attachments": [
               {
-                "pretext": "iOS Build result: *${{job.status}}* | ${{steps.world.outcome}}",
+                "pretext": "iOS Build result: *${{job.status}}* | ${{steps.validation.outcome}}",
                 "color": "dbab09",
                 "fields": [
                   {
