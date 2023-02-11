@@ -23,19 +23,9 @@ jobs:
         with:
           payload: |
             {
-              "text": "Build ready for test!",
-              "blocks": [
-              {
-                "type": "section",
-                "text": {
-                  "type": "mrkdwn",
-                  "text": "*Pull Request:* <https://github.com/waveneuroscience/sonal-mobile-app-ios/pull/${{ github.event.number }}|${{ github.event.pull_request.title }}>"
-                }
-              }
-              ],
               "attachments": [
                 {
-                  "pretext": "Build result: *${{job.status}}*",
+                  "pretext": "*Pull Request:* <https://github.com/waveneuroscience/sonal-mobile-app-ios/pull/${{ github.event.number }}|${{ github.event.pull_request.title }}>. Build result: *${{job.status}}*",
                   "color": "dbab09",
                   "fields": [
                     {
