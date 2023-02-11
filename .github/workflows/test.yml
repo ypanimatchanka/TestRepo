@@ -26,8 +26,7 @@ jobs:
               "attachments": [
                 {
                   "pretext": "*Pull Request:* <https://github.com/waveneuroscience/sonal-mobile-app-ios/pull/${{ github.event.number }}|${{ github.event.pull_request.title }}>",
-                  ${{#if job.status == 'success'}}"color": "5DADE2",${{/if}}
-                  ${{#if job.status != 'success'}}"color": "884EA0",${{/if}}
+                  "color": "dbab09",
                   "fields": [
                     {
                       "title": "OS",
