@@ -37,7 +37,7 @@ jobs:
                       "title": "Build result",
                       "short": true,
                       "value": "${{job.status}}"
-                    }
+                    },
                     {
                       "title": "App Name",
                       "short": true,
