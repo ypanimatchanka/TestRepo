@@ -48,11 +48,12 @@ jobs:
           KEYSTORE_ALIAS_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD_B2B_QA }}
           FLAVOR: 'tеst'
         run: |
-          FL_STATUS = "was started"
           bundle exec fastlane android beta --env test
       - name: Export build status
         run:
+          echo "Job status: ${{job.status}}"
           echo DEPLOY_STATUS2=${{job.status}} >> $GITHUB_ENV
+          echo "::set-env name=DEPLOY_STATUS::{{ job.status }}"
   slack:
     needs: deploy
     if: contains(github.event.pull_request.labels.*.name, 'ready for test') && ${{ always() }}
