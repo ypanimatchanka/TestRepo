@@ -49,7 +49,7 @@ jobs:
         run: |
           bundle exec fastlane android beta --env test
     outputs:
-      build_status: ${{ jobs.fastlane.status }}
+      build_status: ${{ steps.fastlane.status }}
   slack:
     needs: deploy
     if: contains(github.event.pull_request.labels.*.name, 'ready for test') && ${{ always() }}
