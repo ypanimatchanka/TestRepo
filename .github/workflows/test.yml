@@ -40,6 +40,7 @@ jobs:
           sudo gem install bundler -v 2.3.26
           bundle install
       - name: Run Fastlane
+        id: build
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD_B2B_QA }}
           KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_ALIAS_B2B_QA }}
@@ -71,7 +72,7 @@ jobs:
                     {
                       "title": "Build result",
                       "short": true,
-                      "value": "${{needs.jobs.deploy.status}}"
+                      "value": "${{needs.jobs.deploy.outcome}}"
                     },
                     {
                       "title": "App Name",
@@ -98,7 +99,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "Subscribtions tags: wn_android_${{needs.jobs.deploy.status}}"
+                    "text": "Subscribtions tags: wn_android_${{needs.jobs.deploy.steps.build.outcome}}"
                   }
                 }
               ]
