@@ -47,7 +47,7 @@ jobs:
           FLAVOR: 'tеst'
         run: |
           bundle exec fastlane android beta --env test
-          FASTLANE_JOB_STATUS="${{ job.status }}"
+          BUILD_STATUS="${{ job.status }}"
   slack:
     needs: deploy
     if: contains(github.event.pull_request.labels.*.name, 'ready for test') && ${{ always() }}
@@ -72,7 +72,7 @@ jobs:
                     {
                       "title": "Build result",
                       "short": true,
-                      "value": "${{ env.FASTLANE_JOB_STATUS }}"
+                      "value": "$BUILD_STATUS"
                     },
                     {
                       "title": "App Name",
@@ -99,7 +99,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "Subscribtions tags: wn_android_${{ env.FASTLANE_JOB_STATUS}}"
+                    "text": "Subscribtions tags: wn_android_${{ env.BUILD_STATUS}}"
                   }
                 }
               ]
@@ -107,3 +107,5 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.WEBHOOK_URL_SLACK }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+env:
+  BUILD_STATUS: '-/-'
