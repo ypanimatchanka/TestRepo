@@ -47,9 +47,13 @@ jobs:
           KEYSTORE_ALIAS_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD_B2B_QA }}
           FLAVOR: 'tеst'
         run: |
+          FL_STATUS = "was started"
           bundle exec fastlane android beta --env test
+      - name: Export build status
+        run:
+          FL_STATUS = ${{job.status}}
     outputs:
-      build_status: "111"
+      build_status: $FL_STATUS
   slack:
     needs: deploy
     if: contains(github.event.pull_request.labels.*.name, 'ready for test') && ${{ always() }}
