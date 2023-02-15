@@ -23,7 +23,6 @@ jobs:
         env:
           GOOGLE_PLAY_SERVICE_ACCOUNT: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT }}
         run: |
-          echo DEPLOY_STATUS='failed' >> $GITHUB_ENV
           echo $GOOGLE_PLAY_SERVICE_ACCOUNT | base64 --decode > google_account.json
       - name: Clone Certificactes Repository
         uses: actions/checkout@v2
@@ -51,20 +50,12 @@ jobs:
           FLAVOR: 'tеst'
         run: |
           bundle exec fastlane android beta --env test
-      - name: Export build status
-        if: ${{ always() }}
-        run:
-          echo "Job status - ${{ job.status }}"
-          echo "History status - "
-          echo "::set-env name=DEPLOY_STATUS::{{ job.status }}"
   slack:
     needs: deploy
     if: contains(github.event.pull_request.labels.*.name, 'ready for test') && ${{ always() }}
     name: Slack Notification
     runs-on: ubuntu-latest
     steps:
-      - name: Test
-        run: echo "Test - ${{ needs.deploy.outputs.jobstatus }}"
       - name: Send slack notification
         uses: slackapi/slack-github-action@v1.23.0
         with:
@@ -83,7 +74,7 @@ jobs:
                     {
                       "title": "Build result",
                       "short": true,
-                      "value": "${{ env.DEPLOY_STATUS }}"
+                      "value": "${{ needs.deploy.outputs.jobstatus }}"
                     },
                     {
                       "title": "App Name",
@@ -110,7 +101,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "Subscribtions tags: wn_android_${{ env.DEPLOY_STATUS }}"
+                    "text": "Subscribtions tags: wn_android_${{ needs.deploy.outputs.jobstatus }}"
                   }
                 }
               ]
