@@ -101,7 +101,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "Subscribtions tags: wn_android_${{ needs.deploy.outputs.build_status }} ${{needs.deploy.outcome}}"
+                    "text": "Subscribtions tags: wn_android_${{ needs.deploy.outputs.build_status }} ${{job.status}}"
                   }
                 }
               ]
