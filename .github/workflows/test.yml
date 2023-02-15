@@ -71,7 +71,7 @@ jobs:
                     {
                       "title": "Build result",
                       "short": true,
-                      "value": "${{jobs.deploy.status}}"
+                      "value": "${{needs.jobs.deploy.status}}"
                     },
                     {
                       "title": "App Name",
@@ -98,7 +98,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "Subscribtions tags: wn_android_${{jobs.deploy.status}}"
+                    "text": "Subscribtions tags: wn_android_${{needs.jobs.deploy.status}}"
                   }
                 }
               ]
