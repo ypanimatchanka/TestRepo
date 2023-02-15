@@ -21,6 +21,7 @@ jobs:
         env:
           GOOGLE_PLAY_SERVICE_ACCOUNT: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT }}
         run: |
+          echo DEPLOY_STATUS='failed' >> $GITHUB_ENV
           echo $GOOGLE_PLAY_SERVICE_ACCOUNT | base64 --decode > google_account.json
       - name: Clone Certificactes Repository
         uses: actions/checkout@v2
@@ -51,9 +52,7 @@ jobs:
           bundle exec fastlane android beta --env test
       - name: Export build status
         run:
-          FL_STATUS = ${{job.status}}
-    outputs:
-      build_status: $FL_STATUS
+          echo DEPLOY_STATUS=${{job.status}} >> $GITHUB_ENV
   slack:
     needs: deploy
     if: contains(github.event.pull_request.labels.*.name, 'ready for test') && ${{ always() }}
@@ -78,7 +77,7 @@ jobs:
                     {
                       "title": "Build result",
                       "short": true,
-                      "value": "${{ needs.deploy.outputs.build_status }}"
+                      "value": "${{ env.DEPLOY_STATUS }}"
                     },
                     {
                       "title": "App Name",
@@ -105,7 +104,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "Subscribtions tags: wn_android_${{ needs.deploy.outputs.build_status }} ${{job.status}}"
+                    "text": "Subscribtions tags: wn_android_${{ env.DEPLOY_STATUS }}"
                   }
                 }
               ]
