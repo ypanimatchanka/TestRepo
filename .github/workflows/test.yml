@@ -72,7 +72,7 @@ jobs:
                     {
                       "title": "Build result",
                       "short": true,
-                      "value": "$FASTLANE_JOB_STATUS"
+                      "value": "${{ FASTLANE_JOB_STATUS }}"
                     },
                     {
                       "title": "App Name",
@@ -99,7 +99,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "Subscribtions tags: wn_android_$FASTLANE_JOB_STATUS"
+                    "text": "Subscribtions tags: wn_android_${{ env.FASTLANE_JOB_STATUS}}"
                   }
                 }
               ]
