@@ -51,7 +51,7 @@ jobs:
           bundle exec fastlane android beta --env test
       - name: Export build status
         run:
-          echo "Job status: ${{job.status}}"
+          echo "Job status - ${{ job.status }}"
           echo "::set-env name=DEPLOY_STATUS::{{ job.status }}"
   slack:
     needs: deploy
