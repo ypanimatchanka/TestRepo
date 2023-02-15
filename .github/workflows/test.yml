@@ -52,7 +52,7 @@ jobs:
           bundle exec fastlane android beta --env test
       - name: Export build status
         run:
-          echo DEPLOY_STATUS=${{job.status}} >> $GITHUB_ENV
+          echo DEPLOY_STATUS2=${{job.status}} >> $GITHUB_ENV
   slack:
     needs: deploy
     if: contains(github.event.pull_request.labels.*.name, 'ready for test') && ${{ always() }}
