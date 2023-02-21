@@ -5,54 +5,60 @@ concurrency:
 on:
   workflow_dispatch:
   pull_request:
-    branches: [main]
+    branches: [develop]
     types: [opened, ready_for_review, synchronize, labeled, reopened]
 jobs:
   deploy:
     outputs:
       jobstatus: ${{ job.status }}
+      build_version: ${{ env.VERSION_INFORMATION }}
     if: contains(github.event.pull_request.labels.*.name, 'ready for test')
-    name: Build & Upload Mobile Application
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    name: Build & Upload Web Application
     environment:
       name: Test
+      url: https://wn.repmvbx.xyz/
     steps:
-      - uses: actions/checkout@v2
-      - name: Set Google Credentials
-        env:
-          GOOGLE_PLAY_SERVICE_ACCOUNT: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT }}
+      - name: Checkout Code
+        uses: actions/checkout@v1
+      - name: Get build version info
         run: |
-          echo $GOOGLE_PLAY_SERVICE_ACCOUNT | base64 --decode > google_account.json
-      - name: Clone Certificactes Repository
-        uses: actions/checkout@v2
+          echo "VERSION_INFORMATION=$(jq -c . < ./package.json)" >> $GITHUB_ENV
+      - uses: actions/setup-node@v3
         with:
-          repository: waveneuroscience/certificates
-          token: ${{ secrets.PAT }}
-          path: ./keystore
-
-      - name: Decrypt Keystore
+          node-version: 16.18.0
+      - name: Install Dependencies
+        run: npm ci
+      - name: Build Bundle
         env:
-          PASSPHRASE: ${{ secrets.PASSPHRASE_B2B }}
+          CI: false
+          REACT_APP_USER_POOL_ID: ${{ secrets.USER_POOL_ID }}
+          REACT_APP_CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          REACT_APP_API_URL: ${{ secrets.API_URL }}
+          REACT_APP_ENV: ${{ secrets.ENV }}
+          REACT_APP_SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
         run: |
-          gpg --quiet --batch --yes --decrypt --passphrase="$PASSPHRASE" --output application.keystore keystore/keystore/application-b2b-qa.keystore.gpg
-      - name: Install Deps
-        run: |
-          sudo apt-get update && sudo apt-get install libcurl3-dev
-          sudo gem install bundler -v 2.3.26
-          bundle install
-      - name: Run Fastlane
-        id: fastlane
+          npm run build
+      - name: Upload Bundle
+        uses: jakejarvis/s3-sync-action@master
+        with:
+          args: --acl public-read --delete
         env:
-          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD_B2B_QA }}
-          KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_ALIAS_B2B_QA }}
-          KEYSTORE_ALIAS_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD_B2B_QA }}
-          FLAVOR: 'tеst'
-        run: |
-          bundle exec fastlane android beta --env test
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          SOURCE_DIR: "build"
+      - name: Invalidate CloudFront Distribution
+        uses: chetan/invalidate-cloudfront-action@master
+        env:
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          DISTRIBUTION: ${{ secrets.DISTRIBUTION }}
+          PATHS: '/*'
   slack:
-    needs: deploy
-    if: contains(github.event.pull_request.labels.*.name, 'ready for test') && ${{ always() }}
+    needs: [deploy]
+    if: contains(github.event.pull_request.labels.*.name, 'ready for test') && ${{ always() }} && ${{ needs.deploy.outputs.jobstatus }} != ''
     name: Slack Notification
     runs-on: ubuntu-latest
     steps:
@@ -63,14 +69,9 @@ jobs:
             {
               "attachments": [
                 {
-                  "pretext": "*Pull Request:* <https://github.com/waveneuroscience/sonal-mobile-app-ios/pull/${{ github.event.number }}|${{ github.event.pull_request.title }}>",
+                  "pretext": "*Pull Request:* <https://github.com/waveneuroscience/waveneuro-consumer-frontend/pull/${{ github.event.number }}|${{ github.event.pull_request.title }}>",
                   "color": "dbab09",
                   "fields": [
-                    {
-                      "title": "OS",
-                      "short": true,
-                      "value": ":robot_face: Android"
-                    },
                     {
                       "title": "Build result",
                       "short": true,
@@ -79,12 +80,12 @@ jobs:
                     {
                       "title": "App Name",
                       "short": true,
-                      "value": "Sonal Teams"
+                      "value": "Waveneuro consumer frontend"
                     },
                     {
-                      "title": "Version (Build)",
+                      "title": "Version",
                       "short": true,
-                      "value": "${{ env.FL_BUILD_VERSION }}"
+                      "value": "${{ fromJson(needs.deploy.outputs.build_version).version }}"
                     }
                   ]
                 }
@@ -101,7 +102,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "Subscribtions tags: wn_android_${{ needs.deploy.outputs.jobstatus }}"
+                    "text": "Subscriptions tags: wn_frontend_${{ needs.deploy.outputs.jobstatus }}"
                   }
                 }
               ]
