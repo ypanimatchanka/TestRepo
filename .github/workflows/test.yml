@@ -5,7 +5,7 @@ concurrency:
 on:
   workflow_dispatch:
   pull_request:
-    branches: [develop]
+    branches: [main]
     types: [opened, ready_for_review, synchronize, labeled, reopened]
 jobs:
   deploy:
