@@ -11,7 +11,6 @@ jobs:
   deploy:
     outputs:
       jobstatus: ${{ job.status }}
-      build_version: ${{ env.VERSION_INFORMATION }}
     if: contains(github.event.pull_request.labels.*.name, 'ready2 for test')
     runs-on: ubuntu-latest
     name: Build & Upload Web Application
@@ -55,7 +54,7 @@ jobs:
           PATHS: '/*'
   slack:
     needs: [deploy]
-    if: contains(github.event.pull_request.labels.*.name, 'ready for test') && ${{ always() }} && ${{ needs.deploy.outputs.jobstatus }} != null
+    if: contains(github.event.pull_request.labels.*.name, 'ready for test') && ${{ always() }} && needs.deploy.result != 'skipped' && needs.deploy.result != 'cancelled'
     name: Slack Notification
     runs-on: ubuntu-latest
     steps:
