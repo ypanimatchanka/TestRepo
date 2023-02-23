@@ -12,7 +12,7 @@ jobs:
     outputs:
       jobstatus: ${{ job.status }}
       build_version: ${{ env.VERSION_INFORMATION }}
-    if: contains(github.event.pull_request.labels.*.name, 'ready for test')
+    if: contains(github.event.pull_request.labels.*.name, 'ready2 for test')
     runs-on: ubuntu-latest
     name: Build & Upload Web Application
     environment:
