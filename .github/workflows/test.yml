@@ -21,9 +21,6 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v1
-      - name: Get build version info
-        run: |
-          echo "VERSION_INFORMATION=$(jq -c . < ./package.json)" >> $GITHUB_ENV
       - uses: actions/setup-node@v3
         with:
           node-version: 16.18.0
@@ -58,10 +55,15 @@ jobs:
           PATHS: '/*'
   slack:
     needs: [deploy]
-    if: contains(github.event.pull_request.labels.*.name, 'ready for test') && ${{ always() }} && ${{ needs.deploy.outputs.jobstatus }} != ''
+    if: contains(github.event.pull_request.labels.*.name, 'ready for test') && ${{ always() }} && ${{ needs.deploy.outputs.jobstatus }} != null
     name: Slack Notification
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout Code
+        uses: actions/checkout@v1
+      - name: Get build version info
+        run: |
+          echo "VERSION_INFORMATION=$(jq -c . < ./package.json)" >> $GITHUB_ENV
       - name: Send slack notification
         uses: slackapi/slack-github-action@v1.23.0
         with:
@@ -85,7 +87,7 @@ jobs:
                     {
                       "title": "Version",
                       "short": true,
-                      "value": "${{ fromJson(needs.deploy.outputs.build_version).version }}"
+                      "value": "${{ fromJson( env.VERSION_INFORMATION ).version }}"
                     }
                   ]
                 }
