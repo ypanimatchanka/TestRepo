@@ -59,14 +59,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        if: failure() || success()
+        if: ${{ needs.deploy.outputs.jobstatus }} == "success" || ${{ needs.deploy.outputs.jobstatus }} == "failure"
         uses: actions/checkout@v1
       - name: Get build version info
-        if: failure() || success()
+        if: ${{ needs.deploy.outputs.jobstatus }} == "success" || ${{ needs.deploy.outputs.jobstatus }} == "failure"
         run: |
           echo "VERSION_INFORMATION=$(jq -c . < ./package.json)" >> $GITHUB_ENV
       - name: Send slack notification
-        if: failure() || success()
+        if: ${{ needs.deploy.outputs.jobstatus }} == "success" || ${{ needs.deploy.outputs.jobstatus }} == "failure"
         uses: slackapi/slack-github-action@v1.23.0
         with:
           payload: |
