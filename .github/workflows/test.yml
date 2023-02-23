@@ -53,20 +53,19 @@ jobs:
           DISTRIBUTION: ${{ secrets.DISTRIBUTION }}
           PATHS: '/*'
   slack:
+    continue-on-error: true
     needs: [deploy]
-    if: contains(github.event.pull_request.labels.*.name, 'ready for test') && ${{ always() }}
+    if: contains(github.event.pull_request.labels.*.name, 'ready for test') && ( failure() || success() )
     name: Slack Notification
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        if: ${{ needs.deploy.outputs.jobstatus }} == "success" || ${{ needs.deploy.outputs.jobstatus }} == "failure"
+        if: 
         uses: actions/checkout@v1
       - name: Get build version info
-        if: ${{ needs.deploy.outputs.jobstatus }} == "success" || ${{ needs.deploy.outputs.jobstatus }} == "failure"
         run: |
           echo "VERSION_INFORMATION=$(jq -c . < ./package.json)" >> $GITHUB_ENV
       - name: Send slack notification
-        if: ${{ needs.deploy.outputs.jobstatus }} == "success" || ${{ needs.deploy.outputs.jobstatus }} == "failure"
         uses: slackapi/slack-github-action@v1.23.0
         with:
           payload: |
