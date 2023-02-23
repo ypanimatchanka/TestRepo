@@ -54,16 +54,19 @@ jobs:
           PATHS: '/*'
   slack:
     needs: [deploy]
-    if: contains(github.event.pull_request.labels.*.name, 'ready for test') && ${{ always() }} && ( failure() || success() )
+    if: contains(github.event.pull_request.labels.*.name, 'ready for test') && ${{ always() }}
     name: Slack Notification
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
+        if: failure() || success()
         uses: actions/checkout@v1
       - name: Get build version info
+        if: failure() || success()
         run: |
           echo "VERSION_INFORMATION=$(jq -c . < ./package.json)" >> $GITHUB_ENV
       - name: Send slack notification
+        if: failure() || success()
         uses: slackapi/slack-github-action@v1.23.0
         with:
           payload: |
