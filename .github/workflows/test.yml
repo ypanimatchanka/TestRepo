@@ -54,7 +54,7 @@ jobs:
           PATHS: '/*'
   slack:
     needs: [deploy]
-    if: contains(github.event.pull_request.labels.*.name, 'ready for test') && (${{failure()}} || ${{success()}} ) && (needs.deploy.outputs.jobstatus == 'success' || needs.deploy.outputs.jobstatus == 'failed')
+    if: contains(github.event.pull_request.labels.*.name, 'ready for test') && ( failure() || success() ) && (needs.deploy.outputs.jobstatus == 'success' || needs.deploy.outputs.jobstatus == 'failed')
     name: Slack Notification
     runs-on: ubuntu-latest
     steps:
