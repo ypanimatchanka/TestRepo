@@ -11,7 +11,7 @@ jobs:
   deploy:
     outputs:
       jobstatus: ${{ job.status }}
-    if: contains(github.event.pull_request.labels.*.name, 'ready2 for test')
+    if: contains(github.event.pull_request.labels.*.name, 'ready for test')
     runs-on: ubuntu-latest
     name: Build & Upload Web Application
     environment:
